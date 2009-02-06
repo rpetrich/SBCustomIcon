@@ -1,4 +1,6 @@
 #import "SBApplication.h"
+#import <objc/runtime.h>
+#import <substrate.h>
 #import <SpringBoard/SBIconModel.h>
 
 static id $SBApplication_pathForIcon (SBApplication *self, SEL op) {

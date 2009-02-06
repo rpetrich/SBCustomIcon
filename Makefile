@@ -1,40 +1,30 @@
-VERSION = 0.0
+VERSION = 1.0
 PROD = SBCustomIcon
 
 OBJS = hook.o SBApplication.o UIApplication.o
 DISTDIR = $(PROD)-deb
 INSTALLDIR = /Library/MobileSubstrate/DynamicLibraries
 
-CC = arm-apple-darwin9-gcc
 CXX = arm-apple-darwin9-g++
 LD = $(CC)
 LDID = ldid
 IPHONE = iphone
 
-CFLAGS = -Werror -march=armv6 -mcpu=arm1176jzf-s -DVERSION='"$(VERSION)"'
+CFLAGS = -Wall -Werror -march=armv6 -mcpu=arm1176jzf-s \
+         -fobjc-call-cxx-cdtors -fobjc-exceptions -ObjC++ \
+         -DVERSION='"$(VERSION)"'
 
 LDFLAGS = -framework Foundation \
           -framework UIKit \
           -framework CoreFoundation \
-          -framework SpringBoardServices \
-          -F/System/Library/PrivateFrameworks \
           -multiply_defined suppress \
-          -dynamiclib \
-          -Wall \
-          -Werror \
-          -lsubstrate \
-          -lobjc \
-          -ObjC++ \
-          -fobjc-exceptions \
-          -march=armv6 \
-          -mcpu=arm1176jzf-s \
-          -fobjc-call-cxx-cdtors \
-          -init _MyHookInitialize
+          -lsubstrate -lobjc \
+          -dynamiclib -init _SBCustomIconInitialize
 
 all: $(PROD).dylib
 
 $(PROD).dylib: $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^
+	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $^
 	$(LDID) -S $(PROD).dylib
 
 %.o: src/%.mm

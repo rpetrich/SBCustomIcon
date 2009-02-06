@@ -1,4 +1,6 @@
 #import "UIApplication.h"
+#import <objc/runtime.h>
+#import <substrate.h>
 
 static NSString * $UIApplication_pathForCustomIcon (UIApplication *self, SEL op) {
     NSString * bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
