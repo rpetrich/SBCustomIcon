@@ -63,9 +63,12 @@ $(PROD).deb: $(PROD).dylib
 # make directory structure
 	mkdir -p $(DISTDIR)$(INSTALLDIR)
 	mkdir -p $(DISTDIR)/DEBIAN
+	mkdir -p $(DISTDIR)/usr/include/UIKit
 # copy hook and hook's plist
 	cp dist/hook.plist $(DISTDIR)$(INSTALLDIR)/$(PROD).plist
 	cp $(PROD).dylib $(DISTDIR)$(INSTALLDIR)/
+# copy header file
+	cp src/UIApplication-SBCustomIcon.h $(DISTDIR)/usr/include/UIKit/
 # create apt control file
 	sed 's/\$$VERSION/$(VERSION)/g' dist/control > $(DISTDIR)/DEBIAN/control
 	echo Installed-Size: `du -ck $(DISTDIR) | tail -1 | cut -f 1` >> $(DISTDIR)/DEBIAN/control

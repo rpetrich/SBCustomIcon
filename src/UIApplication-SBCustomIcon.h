@@ -5,7 +5,6 @@
 
 @interface UIApplication (SBCustomIcon)
 - (BOOL)hasCustomIcon;
-- (NSString*)pathForCustomIcon;
 - (BOOL)setCustomIcon:(UIImage*)customIcon;
 - (BOOL)setCustomIconFile:(NSString*)customIconPath;
 - (void)removeCustomIcon;
