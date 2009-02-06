@@ -1,0 +1,11 @@
+Package: sbcustomicon
+Name: SBCustomIcon
+Version: $VERSION
+Architecture: iphoneos-arm
+Homepage: http://namedfork.net/iphone/sbcustomicon
+Depiction: http://namedfork.net/iphone/sbcustomicon/cydia-info.html
+Description: Library that allows applications to change their springboard icon dynamically.
+Maintainer: Jesus A. Alvarez <zydeco@namedfork.net>
+Author: Jesus A. Alvarez <zydeco@namedfork.net>
+Section: App Addons
+Depends: mobilesubstrate
