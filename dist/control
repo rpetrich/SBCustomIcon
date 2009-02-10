@@ -3,8 +3,9 @@ Name: SBCustomIcon
 Version: $VERSION
 Architecture: iphoneos-arm
 Homepage: http://namedfork.net/iphone/sbcustomicon
-Description: MobileSubstrate plugin for applications to change their icon dynamically.
+Description: MobileSubstrate extension for applications to change their icon dynamically.
 Maintainer: Jesus A. Alvarez <zydeco@namedfork.net>
 Author: Jesus A. Alvarez <zydeco@namedfork.net>
 Section: App Addons
 Depends: mobilesubstrate
+tag: role::developer
