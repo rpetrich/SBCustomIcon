@@ -36,8 +36,9 @@ static BOOL $SBApplication_customIconIsPersistent (SBApplication *self, SEL op) 
 }
 
 static void $SBApplication_refreshIcon (SBApplication *self, SEL op) {
-    Class SBIconModel = objc_getClass("SBIconModel");
-    [[SBIconModel sharedInstance] reloadIconImageForDisplayIdentifier:[self displayIdentifier]];
+    SBIconModel *iconModel = [objc_getClass("SBIconModel") sharedInstance];
+    if ([iconModel respondsToSelector:@selector(reloadIconImageForDisplayIdentifier:)])
+	    [iconModel reloadIconImageForDisplayIdentifier:[self displayIdentifier]];
 }
 
 static NSString * $SBApplication_pathForCustomIcon (SBApplication *self, SEL op) {
