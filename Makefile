@@ -1,76 +1,21 @@
-VERSION = 1.0
-PROD = SBCustomIcon
+ifeq ($(shell [ -f ./framework/makefiles/common.mk ] && echo 1 || echo 0),0)
+all clean package install::
+	git submodule update --init --recursive
+	$(MAKE) $(MAKEFLAGS) MAKELEVEL=0 $@
+else
 
-OBJS = hook.o SBApplication.o UIApplication.o
-DISTDIR = $(PROD)-deb
-INSTALLDIR = /Library/MobileSubstrate/DynamicLibraries
+ADDITIONAL_CFLAGS = -DVERSION="$(FW_PACKAGE_VERSION)"
 
-CXX = arm-apple-darwin9-g++
-LD = $(CC)
-LDID = ldid
-IPHONE = iphone
+# SBCustomIcon.dylib (/Library/MobileSubstrate/DynamicLibraries)
+TWEAK_NAME = SBCustomIcon
+SBCustomIcon_OBJC_FILES = hook.m SBApplication.m UIApplication.m
+SBCustomIcon_FRAMEWORKS = Foundation UIKit CoreFoundation
 
-CFLAGS = -Wall -Werror -march=armv6 -mcpu=arm1176jzf-s \
-         -fobjc-call-cxx-cdtors -fobjc-exceptions -ObjC++ \
-         -DVERSION='"$(VERSION)"'
+include framework/makefiles/common.mk
+include framework/makefiles/tweak.mk
 
-LDFLAGS = -framework Foundation \
-          -framework UIKit \
-          -framework CoreFoundation \
-          -multiply_defined suppress \
-          -lsubstrate -lobjc \
-          -dynamiclib -init _SBCustomIconInitialize
+internal-package::
+	mkdir -p $(FW_PACKAGE_STAGING_DIR)/usr/include/UIKit
+	cp -a UIApplication-SBCustomIcon.h $(FW_PACKAGE_STAGING_DIR)/usr/include/UIKit/
 
-all: $(PROD).dylib
-
-$(PROD).dylib: $(OBJS)
-	$(CXX) $(CFLAGS) $(LDFLAGS) -o $@ $^
-	$(LDID) -S $(PROD).dylib
-
-%.o: src/%.mm
-	$(CXX) -c $(CFLAGS) $< -o $@
-
-%.o: src/%.m
-	$(CXX) -c $(CFLAGS) $< -o $@
-
-clean-all: clean distclean
-
-clean:
-	rm -rf $(OBJS) $(PROD).dylib
-
-distclean:
-	rm -rf $(PROD).deb $(DISTDIR)
-
-install: $(PROD).dylib
-	scp $(PROD).dylib root@$(IPHONE):$(INSTALLDIR)/.
-	scp dist/hook.plist root@$(IPHONE):$(INSTALLDIR)/$(PROD).plist
-
-reinstall: $(PROD).dylib
-	ssh root@$(IPHONE) "rm -f $(INSTALLDIR)/$(PROD).dylib"
-	scp $(PROD).dylib root@$(IPHONE):$(INSTALLDIR)/.
-
-reinstall-all: $(PROD).dylib
-	ssh root@$(IPHONE) "rm -f $(INSTALLDIR)/$(PROD).dylib"
-	scp $(PROD).dylib root@$(IPHONE):$(INSTALLDIR)/.
-	scp dist/hook.plist root@$(IPHONE):$(INSTALLDIR)/$(PROD).plist
-
-uninstall:
-	ssh root@$(IPHONE) rm $(INSTALLDIR)/$(PROD).dylib $(INSTALLDIR)/$(PROD).plist
-
-dist: $(PROD).deb
-	
-$(PROD).deb: $(PROD).dylib
-# make directory structure
-	mkdir -p $(DISTDIR)$(INSTALLDIR)
-	mkdir -p $(DISTDIR)/DEBIAN
-	mkdir -p $(DISTDIR)/usr/include/UIKit
-# copy hook and hook's plist
-	cp dist/hook.plist $(DISTDIR)$(INSTALLDIR)/$(PROD).plist
-	cp $(PROD).dylib $(DISTDIR)$(INSTALLDIR)/
-# copy header file
-	cp src/UIApplication-SBCustomIcon.h $(DISTDIR)/usr/include/UIKit/
-# create apt control file
-	sed 's/\$$VERSION/$(VERSION)/g' dist/control > $(DISTDIR)/DEBIAN/control
-	echo Installed-Size: `du -ck $(DISTDIR) | tail -1 | cut -f 1` >> $(DISTDIR)/DEBIAN/control
-# package
-	COPYFILE_DISABLE="" COPY_EXTENDED_ATTRIBUTES_DISABLE="" dpkg-deb -b $(DISTDIR) $(PROD).deb
+endif

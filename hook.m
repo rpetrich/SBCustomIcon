@@ -2,7 +2,8 @@
 #import "SBApplication.h"
 #import "UIApplication.h"
 
-extern "C" void SBCustomIconInitialize() {
+__attribute__((constructor))
+static void SBCustomIconInitialize() {
     NSAutoreleasePool* pool = [NSAutoreleasePool new];
     SBApplication_Hook();
     UIApplication_Hook();
